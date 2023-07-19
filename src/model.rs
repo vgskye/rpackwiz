@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash, Default)]
 #[serde(rename_all = "lowercase")]
 #[non_exhaustive]
 pub enum HashFormat {
@@ -9,32 +9,25 @@ pub enum HashFormat {
     Sha1,
     Md5,
     #[serde(rename = "murmur2")]
+    #[default]
     Curseforge,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
 #[serde(rename_all = "kebab-case")]
-pub struct PackFile {
-    pub index: PackFileIndex,
+pub struct Pack {
     pub name: String,
-    pub pack_format: String,
-    pub versions: PackFileVersions,
     pub author: Option<String>,
-    pub description: Option<String>,
     pub version: Option<String>,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
-#[serde(rename_all = "kebab-case")]
-pub struct PackFileIndex {
-    pub file: String,
-    pub hash: String,
-    pub hash_format: HashFormat,
+    pub description: Option<String>,
+    pub pack_format: String,
+    pub index: PackFile,
+    pub versions: PackDependencies,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
 #[non_exhaustive]
-pub struct PackFileVersions {
+pub struct PackDependencies {
     pub minecraft: String,
     pub fabric: Option<String>,
     pub forge: Option<String>,
@@ -44,18 +37,19 @@ pub struct PackFileVersions {
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
 #[serde(rename_all = "kebab-case")]
-pub struct IndexFile {
+pub struct PackIndex {
     pub hash_format: HashFormat,
-    pub files: Vec<IndexFileEntry>,
+    pub files: Vec<PackFile>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
 #[serde(rename_all = "kebab-case")]
-pub struct IndexFileEntry {
+pub struct PackFile {
     pub file: String,
-    pub alias: Option<String>,
     pub hash: String,
     pub hash_format: Option<String>,
+
+    pub alias: Option<String>,
     #[serde(default)]
     pub metafile: bool,
     #[serde(default)]
@@ -71,32 +65,30 @@ pub enum Side {
     Server,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
-pub struct MetaFile {
-    pub download: MetaFileDownload,
-    pub filename: String,
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash, Default)]
+#[serde(default)]
+pub struct Mod {
     pub name: String,
-    #[serde(default)]
-    pub option: MetaFileOptionalState,
-    #[serde(default)]
+    pub filename: String,
+    pub download: ModDownload,
+    pub option: ModOption,
     pub side: Side,
-    #[serde(default)]
-    pub update: MetaFileUpdateState,
+    pub update: Option<ModUpdate>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash, Default)]
 #[serde(rename_all = "kebab-case")]
-pub struct MetaFileDownload {
+pub struct ModDownload {
+    pub url: Option<String>,
     pub hash: String,
     pub hash_format: HashFormat,
     #[serde(default)]
-    pub mode: MetaFileDownloadMode,
-    pub url: Option<String>,
+    pub mode: DownloadMode,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash, Default)]
 #[serde(rename_all = "lowercase")]
-pub enum MetaFileDownloadMode {
+pub enum DownloadMode {
     #[default]
     #[serde(alias = "")]
     Url,
@@ -104,30 +96,24 @@ pub enum MetaFileDownloadMode {
     Curseforge,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
+#[serde(rename_all = "lowercase")]
+pub enum ModUpdate {
+    #[serde(rename_all = "kebab-case")]
+    Modrinth {
+        mod_id: String,
+        version: String,
+    },
+    #[serde(rename_all = "kebab-case")]
+    Curseforge {
+        file_id: u64,
+        project_id: u64,
+    },
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash, Default)]
-pub struct MetaFileOptionalState {
+pub struct ModOption {
     pub optional: bool,
     pub default: bool,
     pub description: Option<String>,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash, Default)]
-#[non_exhaustive]
-pub struct MetaFileUpdateState {
-    pub curseforge: Option<MetaFileUpdateStateCurseforge>,
-    pub modrinth: Option<MetaFileUpdateStateModrinth>,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
-#[serde(rename_all = "kebab-case")]
-pub struct MetaFileUpdateStateCurseforge {
-    file_id: u64,
-    project_id: u64,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
-#[serde(rename_all = "kebab-case")]
-pub struct MetaFileUpdateStateModrinth {
-    mod_id: String,
-    version: String,
 }

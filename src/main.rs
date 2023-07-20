@@ -3,7 +3,7 @@ use std::{fs, path::PathBuf};
 use rpackwiz::model::{PackIndex, Mod, Pack};
 
 fn main() {
-    let base_dir = PathBuf::from(r"C:\Users\dennis\source\Repos\TheAlan404\lctr-modpack");
+    let base_dir = PathBuf::from(r"./");
     let pack: Pack = Pack::load_from(&base_dir.join("pack.toml")).unwrap();
     println!("{:#?}", pack);
     let index: PackIndex = pack.get_index().unwrap();

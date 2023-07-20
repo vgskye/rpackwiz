@@ -3,12 +3,10 @@ use std::{fs, path::PathBuf};
 use rpackwiz::model::{PackIndex, Mod, Pack};
 
 fn main() {
-    let base_dir = PathBuf::from("/tmp/pack/");
-    let pack: Pack =
-        toml::from_str(&fs::read_to_string(base_dir.join("pack.toml")).unwrap()).unwrap();
+    let base_dir = PathBuf::from(r"C:\Users\dennis\source\Repos\TheAlan404\lctr-modpack");
+    let pack: Pack = Pack::load_from(&base_dir.join("pack.toml")).unwrap();
     println!("{:#?}", pack);
-    let index_path = base_dir.join(pack.index.file);
-    let index: PackIndex = toml::from_str(&fs::read_to_string(index_path).unwrap()).unwrap();
+    let index: PackIndex = pack.get_index().unwrap();
     println!("{:#?}", index);
     for file in index.files {
         if file.metafile {

@@ -160,7 +160,9 @@ pub enum DownloadMode {
     Curseforge,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
+// https://github.com/toml-rs/toml/issues/588
+
+/* #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
 #[serde(rename_all = "lowercase")]
 pub enum ModUpdate {
     #[serde(rename_all = "kebab-case")]
@@ -173,6 +175,26 @@ pub enum ModUpdate {
         file_id: u64,
         project_id: u64,
     },
+} */
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
+pub struct ModUpdate {
+    modrinth: Option<ModrinthModUpdate>,
+    curseforge: Option<CurseforgeModUpdate>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
+#[serde(rename_all = "kebab-case")]
+pub struct ModrinthModUpdate {
+    mod_id: String,
+    version: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
+#[serde(rename_all = "kebab-case")]
+pub struct CurseforgeModUpdate {
+    file_id: u64,
+    project_id: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash, Default)]

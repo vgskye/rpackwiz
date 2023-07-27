@@ -109,22 +109,22 @@ pub enum ModUpdate {
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
 pub struct ModUpdate {
-    modrinth: Option<ModrinthModUpdate>,
-    curseforge: Option<CurseforgeModUpdate>,
+    pub modrinth: Option<ModrinthModUpdate>,
+    pub curseforge: Option<CurseforgeModUpdate>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
 #[serde(rename_all = "kebab-case")]
 pub struct ModrinthModUpdate {
-    mod_id: String,
-    version: String,
+    pub mod_id: String,
+    pub version: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
 #[serde(rename_all = "kebab-case")]
 pub struct CurseforgeModUpdate {
-    file_id: u64,
-    project_id: u64,
+    pub file_id: u64,
+    pub project_id: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash, Default)]
